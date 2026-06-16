@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# uv / venv
+.venv/
+
+# データ（各自ダウンロード，~2.3GB）
+data/
+
+# 実験成果物（構造だけ残し中身は無視）
+exp/*/
+!exp/.gitkeep
+
+# wandb ローカルログ
+wandb/
