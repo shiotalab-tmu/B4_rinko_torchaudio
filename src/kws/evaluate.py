@@ -1,4 +1,4 @@
-"""【第4回で穴埋め】predict が TODO（解答: git checkout ans -- src/kws/evaluate.py）.
+"""【第4回で穴埋め】predict が TODO（完成したら確認スクリプト `check_eval` を PASS．模範解答は配布しない）.
 
 test セットでの評価：accuracy / confusion matrix / per-class（classification report）.
 

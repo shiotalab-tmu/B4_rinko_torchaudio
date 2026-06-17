@@ -96,13 +96,15 @@ eval :  全バッチの logits→argmax(pred) と label を蓄積  →  accuracy
 - **スモークスクリプトで環境を確認**：`import torch, torchaudio` が通り，`torch.__version__`・`torch.cuda.is_available()` を print，
   ついでに `torchaudio.datasets.SPEECHCOMMANDS(root=..., download=True)` を1行叩いてデータ取得まで確認する．
   → これらは**公式 API を呼ぶだけで「答え」を含まない**ので，配布しても解答非公開と矛盾しない．「環境が動く＝import OK・CUDA 見える・データ DL 済み」を一発で確認．
-- **着地点を先に見せる**：完成形の出力例（**confusion matrix の png・log-mel の imshow・loss 曲線**）を**資料に画像として貼って見せる**だけにする．
-  ベースラインそのものを各自で動かすには `data.py`/`model.py`/`evaluate.py` の完成版が要り，それは受講者が第1〜4回で埋める当のもの＝**配ると解答配布になる**ので動かさない．画像でゴールだけ体感させる．
+- **全体像を図で先に掴む**：これから4回かけて作る **PyTorch 学習パイプラインの流れ図**（`Dataset` → `DataLoader`（`collate_fn`）→ `Model` → `Loss` → `backward` → `optimizer.step`，評価は `no_grad` で通すだけ）を1枚で見せ，全4回の地図にする．
+  図には shape の変化（`waveform` → `(B,1,n_mels,T')` → `(B,35)` → スカラー）と「どの箱を何回目に作るか」（Dataset/DataLoader＝第1回・Model＝第2回・Loss/backward＝第3回・評価＝第4回）を添える．予習範囲（Tensors/DataLoaders）は図の左側に対応すると示す．
+  完成形の出力例（confusion matrix・log-mel imshow・loss 曲線の画像）は**第1回当日に見せる**（事前課題では流れ図まで）．ベースラインを各自で動かすには完成版コードが要り，それは受講者が第1〜4回で埋める当のもの＝**配ると解答配布になる**ので動かさない．
 - **PyTorch 基礎の予習**：PyTorch 公式 "Learn the Basics" の **Tensors** ／ **Datasets & DataLoaders** の章を読む（第1回 data の予習を兼ねる）．
 - 宿題：分担して第1回（data）の予習を1スライドにまとめる ＋ 各自「分かったこと 1 点 ＋ 疑問 1 点」．
 
 ### 第1回 — キックオフ ＋ PyTorch 基礎 ＋ data → `session1_kickoff_data.md`
-- **予習発表**：事前課題（Tensors / Datasets&DataLoaders）の予習を分担でまとめた1スライドを，10〜15分で1本発表．着地点は各自が事前課題で見ているので，当日の完成形デモは行わない．
+- **予習発表**：事前課題（Tensors / Datasets&DataLoaders）の予習を分担でまとめた1スライドを，10〜15分で1本発表．
+- **完成形の出力例を見せる**：弱ベースラインの出力画像（confusion matrix・log-mel imshow・loss 曲線）を貼って，事前課題の流れ図と対応づけて「これを4回かけて作る」と共有する．学習済みモデルをその場で動かす実演（完成形デモ）はしない（解答配布になるため）．
 - **PyTorch 基礎**：`torch.tensor` ／ `shape`・`dtype`・`device`．
   適当な Tensor を `.to('cuda')` して `nvidia-smi` で **VRAM 使用量が増えるのを実演**（device の意味を体感）．実際にモデルを載せて使うのは第2回．
   - device やデータの流れは文章だけだと掴みにくいので，**概念図を載せる**（生成画像＝nanobanana 等でも可）．

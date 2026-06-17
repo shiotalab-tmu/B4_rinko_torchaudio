@@ -1,6 +1,6 @@
 """学習ループ（CLI）.
 
-【第3回で穴埋めするファイル】run_epoch の学習3ステップが TODO．解答: git checkout ans -- src/kws/train.py
+【第3回で穴埋めするファイル】run_epoch の学習3ステップが TODO．完成したら確認スクリプト `check_train` を PASS させること（模範解答は配布しない）．
 
 config(YAML) を読み，学習ループを回し，loss/acc を記録し，checkpoint を保存する．
 checkpoint は 2 種類:

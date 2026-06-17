@@ -2,7 +2,7 @@
 
 【第1回で穴埋めするファイル】
 notebook 01 で動かしたコードをここに整理する．`# TODO` を埋めると動く．
-詰まったら解答: `git checkout ans -- src/kws/data.py`
+完成したら確認スクリプト `check_data` を全部 PASS させること（模範解答は配布しない）．
 
 特徴量変換（log-mel）は「前処理側」に置く方針なので，ここ（data.py）で持つ．
 collate_fn の中で「波形を 1 秒に揃えて stack → log-mel」まで行い，

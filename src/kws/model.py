@@ -2,7 +2,7 @@
 
 【第2回で穴埋めするファイル】
 notebook 02 で動かしたコードをここに整理する．`# TODO` を埋めると動く．
-詰まったら解答: `git checkout ans -- src/kws/model.py`
+完成したら確認スクリプト `check_model` を全部 PASS させること（模範解答は配布しない）．
 
 特徴量変換（log-mel）は data.py 側に置いたので，このモデルは
 「(B, 1, n_mels, T') の log-mel を受け取って 35 クラスの logits を返す」
