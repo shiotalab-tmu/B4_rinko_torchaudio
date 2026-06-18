@@ -54,7 +54,7 @@ md("""### 学習経過の記録
 学習が途中で止まっても経過が残るので便利．"""),
 
 code("""set_seed(42)
-loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=0)
+loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=4)
 model = AudioCNN(n_classes=35, base=32).to(dev)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
@@ -212,7 +212,7 @@ def predict(model, loader, device):
 
 md("""### 書けたら動作確認"""),
 
-code("""loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=0)
+code("""loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=4)
 y_true, y_pred = predict(model, loaders['test'], dev)
 print(f"test samples: {len(y_true)}, accuracy: {(y_true == y_pred).mean():.3f}")"""),
 
@@ -281,7 +281,7 @@ ckpt = torch.load('exp/baseline/best.pt', map_location=device, weights_only=Fals
 model = AudioCNN(n_classes=35, base=ckpt.get('config', {}).get('base', 32)).to(device)
 model.load_state_dict(ckpt['model'])
 
-loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=0)
+loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=4)
 y_true, y_pred = predict(model, loaders['test'], device)
 
 # --- 1. 出力長が test 件数と一致するか ---

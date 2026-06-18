@@ -166,7 +166,7 @@ from kws.utils import set_seed
 
 set_seed(42)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=0)
+loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=4)
 model = AudioCNN(n_classes=35, base=32).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
@@ -227,7 +227,7 @@ from kws.utils import set_seed
 set_seed(42)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=0)
+loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=4)
 model = AudioCNN(n_classes=35, base=32).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
