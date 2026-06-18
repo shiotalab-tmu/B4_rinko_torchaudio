@@ -31,14 +31,14 @@ class ConvBlock(nn.Module):
 class AudioCNN(nn.Module):
     """(B, 1, n_mels, T') → logits (B, n_classes).
 
-    ConvBlock を 4 段重ねて特徴を抽出し，Global Average Pooling で
+    ConvBlock を 3 段重ねて特徴を抽出し，Global Average Pooling で
     時間・周波数方向を 1 点に潰してから全結合で分類する．
     GAP を使うことで入力の時間長 T' に依存せず固定次元のベクトルになる．
     """
 
     def __init__(self, n_classes: int = 35, base: int = 32):
         super().__init__()
-        # TODO(第2回): ConvBlock を 1->base, base->base*2, base*2->base*4, base*4->base*4 の4段
+        # TODO(第2回): ConvBlock を 1->base, base->base*2, base*2->base*4 の3段
         self.features = nn.Sequential(
             ...  # TODO
         )
