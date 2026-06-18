@@ -5,7 +5,7 @@
 
 ## この回の作り方の方針（重要）
 
-- **当日は notebook の中だけで完結させる**：受講者は notebook 内に自分でコードを書いて動かし，`check_data` も notebook のセルで実行する．`src/kws/data.py` への整理（移植）と `import kws` のための editable 設定は**宿題**に回す（当日 import で詰まらせない）．
+- **当日は notebook の中だけで完結させる**：受講者は notebook 内に自分でコードを書いて動かし，`check_data` も notebook のセルで実行する．`src/kws/data.py` への移植は**宿題**に回す（当日 import で詰まらせない）．宿題の確認スクリプトでは `sys.path.insert(0, "src")` で `from kws.data import ...` を通す．
 - **notebook に「クリックすれば動く完成セル」は置かない**：
   - **答えになる実装**（`collate_fn`・`pad_or_trim` など）は **抽象例（関数の骨組み＋処理の流れをコメントで示す・`...` のプレースホルダ）**に留め，受講者が中身を自分で書く．
   - **答えにならない部分**（概念確認・ライブラリ API の呼び出し＝データを開いて見る等）は **動く最小例**を見せてよい（足場として残す）．
@@ -25,25 +25,30 @@
   - 日本語訳：https://yutaroogawa.github.io/pytorch_tutorials_jp/
 - torchaudio `SPEECHCOMMANDS`：https://docs.pytorch.org/audio/stable/generated/torchaudio.datasets.SPEECHCOMMANDS.html
 - torchaudio `MelSpectrogram` / `AmplitudeToDB`：https://docs.pytorch.org/audio/stable/transforms.html
-
+- 日本語の補助記事（公式以外）：
+  - Tensor 基礎：[PyTorchに入門しよう(1) Tensorの使い方](https://qiita.com/175Rin/items/183d6205e034873ad0b2)（Qiita・shape/dtype/device の確認方法と `.to()` を丁寧に解説）
+  - DataLoader：[【PyTorch】DataLoader解説](https://zenn.dev/yuto_mo/articles/b7e22a33cd2c44)（Zenn・DataLoader の主要引数を網羅的に解説）
+  - collate_fn：[Pytorchのcollate_fnを使ってみる](https://qiita.com/tomp/items/f220bd6ffec006dabaa5)（Qiita・デフォルト挙動とカスタム実装をコード付きで解説）
+- librosa 公式：https://librosa.org/doc/latest/index.html
+  - **注意**：`librosa.load()` はデフォルトで 22050Hz にリサンプルする．波形の読み込みには `torchaudio.load()` を使い，librosa は可視化・分析に使う．
 ## 当日の流れ（90分目安・タイムボックス）
 
 | 枠 | 内容 | 時間 |
 |---|---|---|
-| 導入 | 事前課題の動作確認（スモーク PASS）＋ 完成形画像で全体像を共有 | 10分 |
+| 導入 | 事前課題の動作確認（スモーク PASS）＋ パイプライン流れ図で全体像を共有 | 10分 |
 | 予習発表 | Tensors / Datasets&DataLoaders（受講者が分担した1スライドを代表が1本） | 15分 |
 | ハンズオン①：PyTorch 基礎 | `tensor`/`shape`/`dtype`/`device`，`squeeze`/`unsqueeze`，`.to('cuda')`＋`nvidia-smi` 実演 | 15分 |
 | ハンズオン②：data を見る（動く例を見せる） | 1サンプル構造・波形 plot・log-mel imshow・`label↔index` | 15分 |
 | ハンズオン③：data を束ねる（抽象例→受講者が書く） | `pad_or_trim`・`collate_fn` を自分で書く → `DataLoader` で1バッチ → `check_data` PASS | 25分 |
-| まとめ | import の動機づけ・宿題（`data.py` 移植＋editable＋第2回予習）の指示 | 10分 |
+| まとめ | import の動機づけ・宿題（`data.py` 移植＋第2回予習）の指示 | 10分 |
 
-※ index L119 の警告どおり項目が多い．**クラス分布の確認は宿題に送る**（当日②は最短ルート）．③の `collate_fn`→`check_data` が当日の山場．`batch_size` 体験・Augmentation は速い人向けに置く．
+※ index L119 の警告どおり項目が多い．②にクラス分布の確認（動くコード付き・実行するだけ）を含む．③の `collate_fn`→`check_data` が当日の山場．`batch_size` 体験・Augmentation は速い人向けに置く．
 ※ ③が当日中に終わらない人は**宿題で続きをやればよい**と口頭でも明示する（「動く所まで」を全員に強要して時間崩壊させない）．
 
 ## 導入（10分）
 
 - **事前課題の動作確認**：各自 `uv run python scripts/smoke.py` を走らせ，PASS（version 表示・`SPEECHCOMMANDS: found`）を確認．詰まっている人はここで拾う（当日中に環境を揃える）．
-- **完成形の出力例を見せる**：弱ベースラインの画像（confusion matrix・log-mel imshow・loss 曲線）を貼り，**事前課題のパイプライン流れ図と対応づけて**「今日はこの図のいちばん左（data）を作る」と位置づける．※学習済みモデルをその場で動かす実演はしない（解答配布になるため）．
+- **パイプライン流れ図を見せる**：事前課題のパイプライン流れ図を映し，「今日はこの図のいちばん左（data）を作る」と位置づける．※学習済みモデルの出力画像や学習曲線はここでは見せない（解答配布になるため）．
 
 ## 予習発表（15分）
 
@@ -69,11 +74,18 @@ torchaudio の `SPEECHCOMMANDS` を触り，**データを目で見る**（Karpa
 - **データセットを開く**：`SPEECHCOMMANDS(root='data', download=False, subset='training')`（事前課題で取得済みなので `download=False`）．
 - **1サンプルの構造**：`ds[0]` が `(waveform, sample_rate, label, speaker_id, utterance_number)` の5要素タプルであることを確認．
   - `waveform.shape` ＝ `(1, T)`（チャンネル1・可変長 T）．`sample_rate` ＝ 16000．`label` ＝ 文字列（例 `"yes"`）．
-- **波形を見る**：`matplotlib` で波形を plot．
-- **log-mel を見る**：`make_logmel()`（`MelSpectrogram(n_fft=400, hop_length=160, n_mels=64)` → `AmplitudeToDB()`）を1サンプルに適用し，`imshow` で log-mel スペクトログラムを表示．**これがモデルへの入力**だと示す．
+- **波形を見る**：`librosa.display.waveshow()` で波形を表示（時間軸が秒表記になるので分かりやすい）．波形データ自体は `torchaudio.load()` で読んだものを `.numpy()` に変換して渡す．
+- **log-mel を見る**：notebook 内で `make_logmel` 関数を定義する（`MelSpectrogram(n_fft=400, hop_length=160, n_mels=64)` → `AmplitudeToDB()` をまとめたもの．torchaudio の transform を組み合わせた自前関数）．1サンプルに適用し，`librosa.display.specshow()` で log-mel スペクトログラムを表示．**これがモデルへの入力**だと示す．
   - **このセル（log-mel 変換）と次の `label_to_index` は③でそのまま使う**ので，受講者の手元に残す（②→③の橋渡し）．
 - **`label↔index` マップ**：35クラスの `LABELS`（固定順）から `label_to_index` / `index_to_label` を作る．**ラベルは index の整数**（one-hot ではない）＝第3回 `CrossEntropyLoss` に渡る形，と一言．
-- ※ **クラス分布の確認は宿題**（分布の棒グラフを宿題で作らせる）．当日は時間を③に回す．
+- **クラス分布の確認**（動く例・コード付き）：train/val/test の件数と35クラスの分布を棒グラフで見る．コードは動く形で配布する（受講者はセルを実行するだけ）．後々ハンドブック的に使えるように分析コードは残す．
+  ```python
+  from collections import Counter
+  counts = Counter(ds[i][2] for i in range(len(ds)))  # label を数える
+  plt.bar(counts.keys(), counts.values())
+  plt.xticks(rotation=90); plt.title("Class distribution (train)")
+  plt.tight_layout(); plt.show()
+  ```
 
 ## ハンズオン③：data を束ねる（25分・抽象例 → 受講者が書く）
 
@@ -178,21 +190,10 @@ check_data PASS: (8, 1, 64, 101) torch.int64
 
 ## 宿題（次回＝第2回への引き継ぎ）
 
-- **① 実装を `data.py` に移植して整理**：当日 notebook で書いたコードを `src/kws/data.py` にまとめ，`check_data` を PASS させる．
-  - **`import kws` で使えるようにする（editable 設定）**：事前課題で作った `pyproject.toml` に，`src/kws` をパッケージとして認識させる設定を追記する．これで `from kws.data import ...` が通り，`check_data` が `data.py` 版で動く．
-    > 【資料作成者向け】追記する `pyproject.toml` の雛形（hatchling 例）を配布資料に載せる：
-    > ```toml
-    > [build-system]
-    > requires = ["hatchling"]
-    > build-backend = "hatchling.build"
-    >
-    > [tool.hatch.build.targets.wheel]
-    > packages = ["src/kws"]
-    > ```
-    > 追記後 `uv sync`（または `uv pip install -e .`）で editable install される．
-  - **クラス分布の確認**：train/val/test の件数と35クラスの分布を棒グラフにする（当日②から送った分）．
+- **① 実装を `data.py` に移植して整理**：当日 notebook で書いたコードを `src/kws/data.py` にまとめ，確認スクリプト `check_data` を PASS させる．
+  - 確認スクリプトは `sys.path.insert(0, "src")` ＋ `from kws.data import ...` で受講者の `data.py` を import して検証する形（自分で書いたファイルが正しく再利用できることを確認する）．
   - 整理したら「実装の続き＋`check_data` の PASS 結果＋学んだこと」をまとめる．
-- **② 第2回（model）の予習を分担で1スライド**：観点は第2回（`session2_model.md`）の確定後に指定する（`nn.Module` の書き方など）．
+- **② 第2回（model）の予習を分担で1スライド**：観点は第2回（`session2_model.md`）の確定・コミット後に指定する．
 - 各自「分かったこと1点 ＋ 疑問1点」を持ち寄る．
 
 ## まとめで話すこと
@@ -214,4 +215,4 @@ check_data PASS: (8, 1, 64, 101) torch.int64
 
 - 当日は notebook 内で完結（`data.py` 移植・editable は宿題）．`check_data` も当日は notebook セルで実行する設計．
 - `check_data` の `T'=101` は `n_fft=400, hop_length=160, center=True(default)` で `16000//160+1`．`hop_length` を変えると T' が変わるので，資料の数値は config と一致させること．
-- 弱ベースラインの数値（val/train）確定後，導入で見せる完成形画像をそれに差し替える．
+- 導入ではパイプライン流れ図のみを見せる（弱ベースラインの画像・学習曲線は見せない）．
