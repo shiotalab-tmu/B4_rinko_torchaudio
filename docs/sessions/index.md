@@ -38,7 +38,7 @@
 | 事前課題 | 環境構築 ＋ 資料の予習 | —（環境構築） | スモークスクリプトが通る（import・CUDA・データDL）／予習スライドの分担 |
 | 第1回 | キックオフ ＋ PyTorch 基礎 ＋ data | `data.py`（新規） | `check_data`：1バッチが `(B,1,n_mels,T')`・label が 0–34 の `LongTensor` |
 | 第2回 | model（`nn.Module`） | `model.py`（新規） | `check_model`：出力 `(B,35)`・初期 loss≈3.56・1バッチ過学習で loss→~0 |
-| 第3回 | 学習ループ（最小構成） | `train.py`（新規） | `check_train`：loss が下がる・val acc がチャンス超え・成果物が出力される |
+| 第3回 | 学習ループ（最小構成） | `train.py`（新規） | `check_train`：loss が下がる・val acc がチャンス超え・test accuracy が出る |
 | 第4回 | 学習の深掘り ＋ 評価 ＋ チューニング大会 | `train.py`（改良）＋ `evaluate.py`（新規・小） | `check_eval`：confusion matrix が 35×35・test acc が整合 ／ leaderboard 申告 |
 
 ※ 第5回（コンペ独立回）は時間都合で廃止．チューニング大会と leaderboard は**第4回後半で完結**させる．
@@ -74,9 +74,9 @@ eval :  全バッチの logits→argmax(pred) と label を蓄積  →  accuracy
 - **弱ベースライン**：意図的に単純なモデルにして **val 60〜70% / train 70〜80%** 程度に留め，改善余地を大きく残す．
   underfit 寄りなので「容量を増やす・学習を増やす」施策が素直に効き，因果が分かりやすい．第2回で実装するのもこの弱ベースライン．
   具体 config は実装フェーズで試走確認．
-- **wandb は第3回で名前だけ軽く触れる（初出）・必須にしない**．基本の監視手段は `exp/<run>/loss_curve.png` ＋ `history.json`．
-  第3回の「進捗を csv に吐く → plot で監視」の流れの中で「tensorboard や wandb というツールもある」と紹介する程度にとどめる．
-  アカウント作成・login は強制しない．事前課題では wandb を扱わない（第1回より前にアカウントを作らせない）．
+- **wandb は第4回で名前だけ軽く触れる・必須にしない**．基本の監視手段は `exp/<run>/loss_curve.png` ＋ `history.json`．
+  第4回の「学習経過の記録・可視化」の流れの中で「tensorboard や wandb というツールもある」と紹介する程度にとどめる．
+  アカウント作成・login は強制しない．事前課題では wandb を扱わない．
 - **test 評価の置き場所**：第3回は val まで ＋ 最後に test accuracy だけ（confusion なし・最小構成）．
   confusion matrix / per-class は**第4回の「分析」で初出**．leaderboard 申告も第4回後半．
 
@@ -132,18 +132,16 @@ eval :  全バッチの logits→argmax(pred) と label を蓄積  →  accuracy
 ### 第3回 — 学習ループ（最小構成） → `session3_train.md`
 - 前回まとめ：model（指導者が5分）．**予習発表：train（学習ループ）**（受講者が分担で予習・1スライド）．
 - 座学：`CrossEntropyLoss`（生 logits を渡す）／`Adam`／学習の5行 `zero_grad → forward → loss → backward → step`．
-- **ストーリー仕立てで組み立てる**：まず素朴に学習ループを回す → 「今が何 epoch 目か・うまくいっているか分からない」と気づく →
-  進捗を csv（`history.json`）に吐く → 吐いておけば後から plot して監視できる（`loss_curve.png`）→
-  **ここで「tensorboard や wandb というツールもある」と軽く触れる**（初出・紹介程度・必須にしない）．
-- `run_epoch`（train/val 共通），固定エポック，accuracy．
+- `run_epoch`（train/val 共通），固定エポック，accuracy．**print のみで確認**（可視化・ログ記録は第4回）．
 - **評価の作法**：val/test は `model.eval()` ＋ `torch.no_grad()` で回す（勾配を流さない・BN統計を更新しない）．
-- 学習後に `train.py` 内で test loader を1回まわして **test accuracy だけ**出す（`evaluate.py` はまだ作らない・confusion も持ち込まない）．
-- **確認スクリプト `check_train`**：数 epoch 回して train loss が下がる／val acc がチャンスレート（`1/35≈2.9%`）を超える／`history.json` と `loss_curve.png` が生成される／最後に test accuracy が弱ベースライン水準で出る，を assert．
+- 学習後に test loader を1回まわして **test accuracy だけ**出す（`evaluate.py` はまだ作らない・confusion も持ち込まない）．
+- **「ログが残らない」問題を提起**して第4回へつなげる：print しかしていないので後から実験を振り返れない．
+- **確認スクリプト `check_train`**：数 epoch 回して train loss が下がる／val acc がチャンスレートを超える／test accuracy が出る，を assert．
 - 宿題：`train.py` に整理．
 
-### 第4回 — 学習の深掘り ＋ 評価 ＋ チューニング大会 → `session4_deepdive_eval.md`
+### 第4回 — 学習の深掘り ＋ 評価 ＋ チューニング大会 → `session4_eval_tune.md`
 - 前回まとめ：train（指導者が5分）．**予習発表：評価/チューニング**（overfit/underfit・scheduler・評価指標など，受講者が分担で予習・1スライド）．
-- **前半（深掘り・手を動かす）**：第3回の loss 曲線を起点に overfit/underfit の読み方，early stopping，lr scheduler，learning rate，seed・再現性．
+- **前半（可視化の導入＋深掘り）**：第3回の「ログが残らない」問題を解決する．`history.json` への記録と `loss_curve.png` の描画を導入し，その曲線を起点に overfit/underfit の読み方，early stopping，lr scheduler，seed・再現性．
 - **評価（見せる／分析）**：`evaluate.py` を**新規作成するが穴は小さく**（受講者が書くのは「全バッチの pred/label を集める」predict だけ．
   confusion matrix の描画と classification report は用意済みを呼ぶだけ）．これで「どのクラスを間違えるか」を分析する．
 - **確認スクリプト `check_eval`**：predict の出力長が test 件数と一致／test acc が学習時に見た値と整合／confusion matrix が 35×35，を assert．

@@ -1,17 +1,17 @@
 # ベースラインのハイパーパラメータ
 # CLI から --device / --epochs / --run-name で上書きできる．
 
-epochs: 25          # わざと過学習が見えるまで回す（best.pt採用なので test 精度は維持／第5回で改善余地）
+epochs: 25          # わざと過学習が見えるまで回す．best.pt 採用なので test 精度は維持，第4回で改善余地
 batch_size: 256
 lr: 0.001
 n_mels: 64
-base: 32            # AudioCNN のチャネル幅（base, base*2, base*4, base*4）
+base: 32            # AudioCNN のチャネル幅．3段: base → base*2 → base*4
 num_workers: 4
 seed: 42
 device: cuda        # 明示指定．CPU で試すなら cpu に変えるか --device cpu
 data_root: data
 run_name: baseline
 
-# --- 第5回の布石（最小フック）---
+# --- 第4回の布石 ---
 augment: false
 scheduler: null     # null または cosine

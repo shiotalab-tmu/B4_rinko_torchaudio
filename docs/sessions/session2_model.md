@@ -61,6 +61,7 @@
 
 ※ ②の ConvBlock ＋ AudioCNN が当日の山場（合計2クラスを書く）．ConvBlock が書けると AudioCNN はそれを並べるだけなので，**ConvBlock に十分時間をかける**．
 ※ ②が当日中に終わらない人は**宿題で続きをやればよい**と口頭でも明示する（session1 と同じ）．
+※ ③が20分に収まらない場合は，base 比較（L226-236）を速い人向けに回し，1バッチ過学習と check_model に集中する．
 
 ## ハンズオン①：nn.Module 基礎（10分・動く例）
 
@@ -143,13 +144,13 @@ print("out:", net(torch.randn(4, 28)).shape)  # (4, 10)
 >         return self.block(x)
 > ```
 
-- 書けたら動作確認：`ConvBlock(1, 16)(torch.randn(2, 1, 64, 101)).shape` → `(2, 16, 32, 50)`（MaxPool で H,W が半減）．
+- 書けたら動作確認（out_ch=16 は確認用の任意の値．本番の AudioCNN では base=32 から始まる）：`ConvBlock(1, 16)(torch.randn(2, 1, 64, 101)).shape` → `(2, 16, 32, 50)`（MaxPool で H,W が半減）．
 
 ### AudioCNN（15分）
 
 ConvBlock を3段重ね＋ GAP ＋ Linear で分類器を作る．
 
-- **GAP（Global Average Pooling）** の意味を一言：時間・周波数方向を1点の平均値に潰す → 空間サイズに依存しない固定長ベクトルになる．だから入力の T' が多少違っても動く．
+- Pooling には global average pooling を使う．空間方向を1点に潰して固定長ベクトルにする．
 - チャネル幅は `base` 起点：`1 → base → base*2 → base*4`．
 - `forward` の最後に `self.classifier(x)` で logits を返すだけ（1行の TODO）．
 
@@ -220,7 +221,7 @@ Linear(128, 35):     (B, 35)              ← logits
 ```
 
 - notebook で1段ずつ `model.features[0](x).shape` → `model.features[1](...).shape` → … と追いかけるセルを用意する（動く例）．
-- **T'=101 が 50→25→12 になる**：奇数の 101 は MaxPool2d(2) で `floor(101/2)=50` になり，以降偶数なので綺麗に半減．T'=16000//160+1=101（`n_fft=400, hop_length=160, center=True`）．最終的に GAP で 1 になるので端数は問題にならない．
+- **T'=101 が 50→25→12 になる**：`MaxPool2d(kernel_size=2)` は既定で `stride=2` なので出力は `floor(入力/2)`．奇数の 101 は `floor(101/2)=50` になり，以降偶数なので綺麗に半減．T'=16000//160+1=101（`n_fft=400, hop_length=160, center=True`）．最終的に GAP で 1 になるので端数は問題にならない．
 - `sum(p.numel() for p in model.parameters() if p.requires_grad)` でパラメータ数を確認する．
 
 ### base を変えるとどうなるか（動く例・観察）
@@ -242,8 +243,8 @@ Linear(128, 35):     (B, 35)              ← logits
 **同じ1バッチを何百 step も学習して loss が ~0 に落ちるか**を見る．落ちれば forward の実装が正しく，勾配もちゃんと流れている証拠．Karpathy "A Recipe for Training Neural Networks" の定番チェック．
 
 - **初期 loss**：ランダム重みの model は各クラスをほぼ等確率で予測する → `CrossEntropyLoss` の初期値は `-log(1/35) = ln(35) ≈ 3.56`．これより大きく外れていたら何かがおかしい．
-- **`CrossEntropyLoss` は生の logits を渡す**（内部で log_softmax ＋ NLL をやるので，**forward 内で softmax をかけてはいけない**＝二重 softmax で学習が壊れる）．loss の詳しい話は第3回で．
-- 学習ループ（`zero_grad`→`forward`→`loss`→`backward`→`step`）は**ここでは動くコードを提供する**（受講者がループ自体を書くのは第3回の穴埋め）：
+- **`CrossEntropyLoss` は生の logits を渡す**（内部で log_softmax ＋ NLL をやるので，**forward 内で softmax をかけてはいけない**＝二重 softmax で勾配が潰れ，学習がうまく進まなくなる）．loss の詳しい話は第3回で．
+- 学習ループ（`zero_grad`→`forward`→`loss`→`backward`→`step`）は**ここでは動くコードを提供する**（受講者がループ自体を書くのは第3回の穴埋め）．今はこの5行の中身を完全に理解しなくてよい．loss が下がることだけ確認できれば OK：
   ```python
   model = AudioCNN(n_classes=35, base=32)
   criterion = nn.CrossEntropyLoss()
@@ -279,8 +280,9 @@ from torch import nn
 
 sys.path.insert(0, "src")
 from kws.model import AudioCNN, ConvBlock
+from kws.utils import set_seed
 
-torch.manual_seed(0)
+set_seed(42)
 
 N_MELS, T_PRIME, N_CLASSES, B = 64, 101, 35, 8
 
@@ -304,7 +306,7 @@ for name, p in model.named_parameters():
     assert p.grad is not None, f"{name} の grad が None（勾配が流れていない）"
 
 # --- 4. 1バッチ過学習（200 step で loss → ~0） ---
-torch.manual_seed(0)
+set_seed(42)
 model2 = AudioCNN(n_classes=N_CLASSES, base=32)
 opt = torch.optim.Adam(model2.parameters(), lr=1e-3)
 feats = torch.randn(B, 1, N_MELS, T_PRIME)
@@ -366,3 +368,4 @@ check_model PASS: logits (8, 35), init_loss 3.55, overfit_loss 0.0012
 - `train.py` の Config に `base: int = 32` がある．ここで `base` の意味を教えておくことで，第4回チューニングで受講者が自分で変えられる．
 - **session1 の宿題②を更新する必要がある**：現在「観点は session2_model.md の確定・コミット後に指定する」となっている箇所に，この文書の「予習発表」節にある問いを入れる．session2 が確定コミットされた時点で更新すること．
 - 1バッチ過学習で使う学習ループは第3回の穴埋め対象と重なるが，ここでは「動く例として提供」の位置づけ（受講者にループを書かせるのは第3回）．
+- **巡回時のチェックポイント**：受講者が `Conv2d` で `bias=False` を忘れて `bias=True` のまま書いていてもエラーにならず動く．BN が bias 相当を持つため性能にもほぼ影響しない．模範実装と違う点を見つけたら「動くけど慣例的には bias=False にする」と軽く指摘する程度でよい．
