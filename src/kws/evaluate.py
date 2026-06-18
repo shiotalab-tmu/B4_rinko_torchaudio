@@ -32,7 +32,7 @@ def predict(model: torch.nn.Module, loader, device: torch.device):
         feats = feats.to(device)
         logits = model(feats)
         ps.append(logits.argmax(1).cpu())
-        ys.append(targets)
+        ys.append(targets.cpu())
     return torch.cat(ys).numpy(), torch.cat(ps).numpy()
 
 

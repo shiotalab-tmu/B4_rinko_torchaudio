@@ -7,7 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 MODE="${1:-full}"
-for g in 01_setup_and_data 02_model 03_train_wandb 04_eval_repro 05_workshop; do
+for g in 01_data 02_model 03_train 04_eval_tune; do
     uv run python "tools/gen_${g}.py" "notebooks/${g}.ipynb" "$MODE"
 done
 echo "done (mode=${MODE})"

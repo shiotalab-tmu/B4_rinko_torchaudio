@@ -4,11 +4,11 @@ config(YAML) を読み，学習ループを回し，loss/acc を記録し，chec
 checkpoint は 2 種類:
   - last.pt … 毎エポックの「現在の重み」（optimizer/epoch も持つ → 中断再開に使う）
   - best.pt … val accuracy が最良だったエポックの重み（推論・配布に使う）
-ログは wandb（任意）と history.json の両方に残す．
+ログは history.json に残す．
 
 使い方:
     uv run python -m kws.train --config configs/baseline.yaml --device cuda
-    uv run python -m kws.train --config configs/baseline.yaml --device cuda --epochs 1 --no-wandb
+    uv run python -m kws.train --config configs/baseline.yaml --device cuda --epochs 1
     uv run python -m kws.train --config configs/baseline.yaml --device cuda --resume  # 中断再開
 """
 
@@ -48,7 +48,7 @@ class Config:
     device: str | None = None  # None なら auto，"cuda"/"cpu" で明示指定
     data_root: str = "data"
     run_name: str = "baseline"
-    # --- 第5回の布石（最小フック）---
+    # --- 第4回の布石（最小フック）---
     augment: bool = False
     scheduler: str | None = None  # None または "cosine"
 
@@ -125,7 +125,6 @@ def main():
     parser.add_argument("--epochs", type=int, help="config の epochs を上書き")
     parser.add_argument("--run-name", dest="run_name", help="実験名（exp/<run_name>/ に保存）")
     parser.add_argument("--resume", action="store_true", help="exp/<run_name>/last.pt から再開")
-    parser.add_argument("--no-wandb", action="store_true", help="wandb を使わない")
     args = parser.parse_args()
 
     cfg = load_config(
@@ -156,16 +155,6 @@ def main():
     if not args.resume:  # 新規開始ならログを初期化（resume 時は追記）
         log_path.write_text("")
     log(f"device: {device} / run: {cfg.run_name}")
-
-    use_wandb = not args.no_wandb
-    if use_wandb:
-        try:
-            import wandb
-
-            wandb.init(project="kws-tutorial", name=cfg.run_name, config=asdict(cfg))
-        except Exception as exc:  # noqa: BLE001
-            log(f"[wandb] 無効化して続行（{exc}）")
-            use_wandb = False
 
     loaders = get_dataloaders(cfg.data_root, cfg.batch_size, cfg.n_mels, cfg.num_workers)
     model = AudioCNN(n_classes=35, base=cfg.base).to(device)
@@ -220,8 +209,6 @@ def main():
         # history と loss 曲線は毎エポック更新（途中でも確認でき，中断時も残る）
         history_path.write_text(json.dumps(history, indent=2))
         save_loss_curve(history, curve_path)
-        if use_wandb:
-            wandb.log(row)
 
         # val が最良なら best を更新（先に更新して last にも正しい best_acc を残す）
         improved = va_acc > best_acc
@@ -239,8 +226,6 @@ def main():
 
     log(f"best val acc: {best_acc:.3f}  →  {best_path}")
     log(f"artifacts: {out_dir}/ (last.pt, best.pt, history.json, loss_curve.png, train.log, config.json)")
-    if use_wandb:
-        wandb.finish()
 
 
 if __name__ == "__main__":
