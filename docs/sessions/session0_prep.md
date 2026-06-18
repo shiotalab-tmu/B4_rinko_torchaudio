@@ -85,9 +85,9 @@
    - うまくいかないとき：「`pyproject.toml` が既にある」と出たら，配布物に pyproject が混ざっている（本来含めない）．消してから再実行．
 4. **依存パッケージを自分で足す**（`uv add` で `pyproject.toml` に追記される．全員バージョンを揃える）：
    ```bash
-   uv add "torch==2.4.1" "torchaudio==2.4.1" matplotlib
+   uv add "torch==2.4.1" "torchaudio==2.4.1" matplotlib librosa
    ```
-   - 入れるもの：`torch`（PyTorch 本体）／`torchaudio`（音声データ・変換）／`matplotlib`（第1回で log-mel を imshow する）．
+   - 入れるもの：`torch`（PyTorch 本体）／`torchaudio`（音声データ・変換）／`matplotlib`（第1回で log-mel を imshow する）／`librosa`（音声の可視化・分析）．
    - torch の PyPI wheel（Linux）は **CUDA ランタイムを同梱**しているので，素の `uv add` で CUDA 版が入り，GPU マシンなら `torch.cuda.is_available()` が True になる（`nvidia-*` パッケージが一緒に入る）．
    - うまくいかないとき：解決が遅い／失敗するときはもう一度実行（途中から再開する）．
 5. **データセット（SPEECHCOMMANDS）を取得**（明示的に1回だけ DL・約2.3GB）：
@@ -181,5 +181,5 @@ else:
 
 ## 第1回への受け渡しメモ（資料作成者向け・受講者には出さない）
 
-- 事前課題では `src/kws` を `import kws` で使う editable 設定（hatchling の `packages` 指定）は**入れない**（スモークは単体スクリプトなので不要）．
-- editable 設定は **第1回**で `data.py` に整理し始めるときに足す．`session1_*.md` 側にその手順を書き，事前課題で作った `pyproject.toml` に追記する形にする（当日いきなり各自が環境を作り直さずに済むようにする）．
+- 事前課題では `src/kws` を `import kws` で使う設定は**入れない**（スモークは単体スクリプトなので不要）．
+- 第1回以降の宿題（`data.py` / `model.py` への移植）では，確認スクリプト冒頭に `sys.path.insert(0, "src")` を入れて `from kws.data import ...` を通す方式にする（editable install は不要）．

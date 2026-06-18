@@ -50,7 +50,7 @@ class Config:
     device: str | None = None  # None なら auto，"cuda"/"cpu" で明示指定
     data_root: str = "data"
     run_name: str = "baseline"
-    # --- 第5回の布石（最小フック）---
+    # --- 第4回の布石（最小フック）---
     augment: bool = False
     scheduler: str | None = None  # None または "cosine"
 
