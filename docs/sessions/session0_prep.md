@@ -1,26 +1,26 @@
-# 事前課題 — 環境構築 ＋ 第1回の予習（`session0_prep.md`）
+# 事前課題 — 環境構築 ＋ 第1回の予習
 
-> 各回の地図は `docs/sessions/index.md`．本ファイルは事前課題の超詳細．
-> 事前課題は各自が自宅で行う（前回まとめ・予習発表は無い）．当日（第1回）は動作確認のみ．
+> 各回の概要は `docs/sessions/index.md`．本ファイルは事前課題の説明．
+> 事前課題は各自が行う（次週発表）．
 
 ## ねらい
 
 - **自分の手で uv プロジェクトをゼロから立て**，torch / torchaudio が動く環境を作れるようになる．
-  環境を自分で作れること自体が研究で効く（再現性・使い回し）ので，写経ではなく `uv init` から始める．
+  環境を自分で作れること自体がうれしいので，`uv sync` ではなく `uv init` をやってもらう．
 - SPEECHCOMMANDS（35クラス・約2.3GB）を取得し，**スモークスクリプトが PASS** する状態にする．
 - これから4回かけて作る **PyTorch の学習パイプライン全体の流れ**を，図で先に掴む．
 - PyTorch 基礎（Tensors / Datasets&DataLoaders）を予習し，第1回（data）の予習を**分担で1スライド**にまとめる．
 
-## 事前課題でやること（2種類）
+## 事前課題でやること
 
-- **全員がやること**：① 環境構築（`uv` で環境を作る）／② SPEECHCOMMANDS データセットの取得．
-  → 下の「手順」に従って進め，最後に**スモークスクリプトを PASS**させる．
+- **全員がやること**：① 環境構築／② SPEECHCOMMANDS データセットの取得．
+  → 下の「手順」に従って進め，最後に**確認スクリプトを PASS**させる．
 - **分担してやること**：Tensors / Datasets / DataLoaders の予習（下の「予習」を参照）．
-  → どの資料を見て・どんな問いについて・どの粒度でまとめるかは「予習」の節で具体的に示す．分担の割り当ては当日 tenk が行う．
+  → どの資料を見て・どんな問いについて・どの粒度でまとめるかは「予習」の節で具体的に示す．分担の割り当ては参加者でよしなに．
 
-## 詰まったときは（先に読む）
+## 詰まったときの取り組み方
 
-- まず 30 分は自分で粘る．無理なら **Slack に貼る**（実行したコマンド ＋ **エラーメッセージ全文**を貼ると解決が速い）．
+- まず 30 分は自分で粘る．無理なら **Slack で相談**（実行したコマンド ＋ **エラーメッセージ全文**を貼ると解決が速い）．
 - **メンバー同士の相談OK**．指導者が時間外もサポートする．
 - 環境構築でどうしても進まなくても，**当日（第1回）に一緒に直せる**ので，まずは手を動かしてみること．
 
@@ -28,13 +28,13 @@
 
 - uv 公式（install / `uv init` / `uv add`）：https://docs.astral.sh/uv/
 - uv で PyTorch を入れる：https://docs.astral.sh/uv/guides/integration/pytorch/
-- PyTorch "Learn the Basics"（英語・公式）：https://docs.pytorch.org/tutorials/beginner/basics/intro.html
-  - 読む章＝**Tensors** と **Datasets & DataLoaders**（第1回 data の予習を兼ねる）．
-- PyTorch チュートリアル（日本語翻訳版）：https://yutaroogawa.github.io/pytorch_tutorials_jp/
+- PyTorch "Learn the Basics"：https://docs.pytorch.org/tutorials/beginner/basics/intro.html
+  - 読む章＝**Tensors** と **Datasets & DataLoaders**．
+- PyTorch チュートリアル：https://yutaroogawa.github.io/pytorch_tutorials_jp/
   - 上の公式の日本語訳．英語がつらい人はこちらで同じ章を読む．
 - torchaudio `SPEECHCOMMANDS`：https://docs.pytorch.org/audio/stable/generated/torchaudio.datasets.SPEECHCOMMANDS.html
-- 参考書：『ゼロから作る Deep Learning』①（既習のはず）．
-  - shape / dtype の感覚 → 1巻 1章（NumPy の多次元配列）．「バッチ」「ミニバッチ」の感覚 → 1巻 4章（学習）．
+- 参考書：『ゼロから作る Deep Learning』①．
+  - shape / dtype の感覚 → 1巻 1章（NumPy の多次元配列）．「バッチ」「ミニバッチ」の感覚 → 1巻 4章．
 
 ## 配布物（この時点で渡すもの）
 
@@ -54,7 +54,7 @@
 > - 図に**含めない**もの（後の回に取っておく）：モデル内部の層構成（第2回）／`device`・`.to()` の話（第1回の概念図に譲る）／実際の関数名・コード．
 > - **今回の予習（Tensors / Datasets&DataLoaders）は，この図の左側（`Dataset` → `DataLoader`）に対応する**と明示する．右側（Model 以降）はまだ予習しなくてよい．
 
-この図の流れを4回かけて自分の手で組むと，最終的に「log-mel スペクトログラム・loss 曲線・35×35 の confusion matrix」といった出力が出せるようになる（完成形の画像は当日見せる）．
+この図の流れを4回かけて自分の手で組むと，最終的に「log-mel スペクトログラム・loss 曲線・35×35 の confusion matrix」といった出力が出せるようになる．
 
 ## 手順（各自・自宅）
 
@@ -69,28 +69,27 @@
    pwd            # 入れたか（パスが変わったか）を確認
    ```
    - うまくいかないとき：`ls` でフォルダが見えない → clone が失敗している．URL を確認して再実行．
-2. **uv をインストール**（パッケージ・環境管理ツール）．
+2. **uv をインストール**．
    - まず**入っているか確認**：
      ```bash
      uv --version
      ```
      - `uv 0.x.x` のように出れば**インストール済み**（次へ）．
-     - `uv: command not found` と出たら未インストール → 上の「uv 公式」リンクの手順で入れる．入れた直後はターミナルを開き直す（PATH 反映のため）．
+     - `uv: command not found` と出たら未インストール → 上の「uv 公式」リンクの手順で入れる．．
 3. **uv プロジェクトをまっさらから作る**：リポジトリのルートで
    ```bash
    uv init --python 3.12
    ```
-   - 作られるファイルの意味：`pyproject.toml`（依存やプロジェクト設定を書く台帳）／`.python-version`（使う Python のバージョン＝3.12）．`main.py` 等も作られるが今は無視してよい．
+   - 作られるファイルの意味：`pyproject.toml`（依存やプロジェクト設定の定義）／`.python-version`（使う Python のバージョン＝3.12）．`main.py` 等も作られるが今は無視してよい．
    - **Python は 3.12 を指定する**（torch 2.4.1 が対応するのは 3.8〜3.12．3.13 だと入らない）．
-   - うまくいかないとき：「`pyproject.toml` が既にある」と出たら，配布物に pyproject が混ざっている（本来含めない）．消してから再実行．
-4. **依存パッケージを自分で足す**（`uv add` で `pyproject.toml` に追記される．全員バージョンを揃える）：
+   - うまくいかないとき：「`pyproject.toml` が既にある」と出たら，消してから再実行．
+4. **依存パッケージを自分で足す**（`pyproject.toml` に追記される）：
    ```bash
    uv add "torch==2.4.1" "torchaudio==2.4.1" matplotlib librosa
    ```
-   - 入れるもの：`torch`（PyTorch 本体）／`torchaudio`（音声データ・変換）／`matplotlib`（第1回で log-mel を imshow する）／`librosa`（音声の可視化・分析）．
-   - torch の PyPI wheel（Linux）は **CUDA ランタイムを同梱**しているので，素の `uv add` で CUDA 版が入り，GPU マシンなら `torch.cuda.is_available()` が True になる（`nvidia-*` パッケージが一緒に入る）．
-   - うまくいかないとき：解決が遅い／失敗するときはもう一度実行（途中から再開する）．
-5. **データセット（SPEECHCOMMANDS）を取得**（明示的に1回だけ DL・約2.3GB）：
+   - 入れるもの：`torch`／`torchaudio`／`matplotlib`／`librosa`．
+   - うまくいかないとき：解決が遅い／失敗するときはもう一度実行．
+5. **データセット（SPEECHCOMMANDS）を取得**：
    ```bash
    uv run python -c "import torchaudio; torchaudio.datasets.SPEECHCOMMANDS(root='data', download=True)"
    ```
@@ -98,13 +97,13 @@
    - これは torchaudio の公式 API を1行呼んで，データをダウンロード・展開している．展開先は `data/SpeechCommands/speech_commands_v0.02/`．
    - 確認：`ls data/SpeechCommands/speech_commands_v0.02/` でフォルダの中身（各コマンドのフォルダ）が見えれば取得成功．
    - 目安：回線次第で数分〜十数分．**空き容量は 3GB 以上**確保．途中で失敗したら再実行でよい．
-6. **スモークを実行**して環境を確認：
+6. **確認スクリプトを実行**して環境を確認：
    ```bash
    uv run python scripts/smoke.py
    ```
    下の PASS の見え方になれば環境完成．
 
-## スモークスクリプト `scripts/smoke.py`（配布・答えを含まない）
+## 確認スクリプト `scripts/smoke.py`
 
 ```python
 """環境チェック：import・version・CUDA・データの有無を確認する．
