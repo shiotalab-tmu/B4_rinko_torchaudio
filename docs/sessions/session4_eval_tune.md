@@ -72,7 +72,7 @@
 import json
 
 history = []
-for epoch in range(1, 16):
+for epoch in range(1, 11):
     tr_loss, tr_acc = run_epoch(model, loaders['train'], criterion, device, optimizer)
     va_loss, va_acc = run_epoch(model, loaders['val'], criterion, device, None)
     print(f"epoch {epoch}: train loss {tr_loss:.3f} acc {tr_acc:.3f} | val loss {va_loss:.3f} acc {va_acc:.3f}")
@@ -110,7 +110,7 @@ fig.tight_layout(); fig.savefig('loss_curve.png', dpi=150); plt.show()
 - **train loss↓ / val loss↑**：**過学習**．モデルが訓練データに特化しすぎている
 - **train loss が高止まり**：**未学習**．モデルの容量が足りないか，学習率が合っていない
 
-弱ベースラインの25 epoch なら，train loss は順調に下がるが val loss は途中から横ばい〜微増するはず．「train は良くなっているのに val は良くならない＝過学習が始まっている」ことを確認する．
+10 epoch でも train loss と val loss の乖離が見え始めるはず．「train は良くなっているのに val は良くならない＝過学習が始まっている」ことを確認する．
 
 ### early stopping
 
@@ -186,7 +186,7 @@ base = ckpt.get('config', {}).get('base', 32)
 model = AudioCNN(n_classes=35, base=base).to(device)
 model.load_state_dict(ckpt['model'])
 
-loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=0)
+loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=4)
 y_true, y_pred = predict(model, loaders['test'], device)
 print(f"test samples: {len(y_true)}, accuracy: {(y_true == y_pred).mean():.3f}")
 ```
@@ -240,7 +240,7 @@ ckpt = torch.load('exp/baseline/best.pt', map_location=device, weights_only=Fals
 model = AudioCNN(n_classes=35, base=ckpt.get('config', {}).get('base', 32)).to(device)
 model.load_state_dict(ckpt['model'])
 
-loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=0)
+loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=4)
 y_true, y_pred = predict(model, loaders['test'], device)
 
 # --- 1. 出力長が test 件数と一致するか ---

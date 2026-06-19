@@ -139,7 +139,7 @@ torchaudio の `SPEECHCOMMANDS` を触り，**データを目で見る**（Karpa
 > つまずき定番：① `waveform` は `(1,T)` なので `squeeze(0)` で1次元に．② log-mel 後に `unsqueeze(1)` で channel を足す．③ ラベルは `dtype=torch.long`．
 
 - 書けたら `DataLoader(ds, batch_size=8, collate_fn=collate, num_workers=0)` で1バッチ取り出して shape を print．
-  - **`num_workers=0` で動かす**（notebook/Jupyter で `num_workers>0` はマルチプロセス起因のハング・例外の定番地雷．当日は 0）．
+  - ここは1バッチだけなので **`num_workers=0`** で十分．学習ループでは速度のため `num_workers=4` にする．
 - **詰まり対応**：中間チェックポイントを刻む（`pad_or_trim` 単体で `(16000,)` が返るか → `collate` で1バッチの shape → `check_data`）．下の「よくあるエラー早見表」を配る．
 
 ### よくあるエラー早見表（③用に配る）

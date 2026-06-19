@@ -143,7 +143,7 @@ from kws.utils import set_seed
 
 set_seed(42)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=0)
+loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=4)
 model = AudioCNN(n_classes=35, base=32).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
@@ -154,7 +154,7 @@ print(f"train: loss {tr_loss:.3f}, acc {tr_acc:.3f}")
 ```
 
 - train loss が初期（≈3.56）から下がっていれば学習が回っている証拠．1 epoch で 2.5〜3.0 程度まで下がれば順調．
-- notebook で動かすので **`num_workers=0`** にしておく．
+- `num_workers=4` でデータローディングを並列化する．0 だと学習が非常に遅くなる．
 
 ### よくあるエラー早見表（②用に配る）
 
@@ -227,7 +227,7 @@ from kws.utils import set_seed
 set_seed(42)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=0)
+loaders = get_dataloaders('data', batch_size=256, n_mels=64, num_workers=4)
 model = AudioCNN(n_classes=35, base=32).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
