@@ -110,7 +110,7 @@ fig.tight_layout(); fig.savefig('loss_curve.png', dpi=150); plt.show()
 - **train loss↓ / val loss↑**：**過学習**．モデルが訓練データに特化しすぎている
 - **train loss が高止まり**：**未学習**．モデルの容量が足りないか，学習率が合っていない
 
-10 epoch でも train loss と val loss の乖離が見え始めるはず．「train は良くなっているのに val は良くならない＝過学習が始まっている」ことを確認する．
+10 epoch でも train loss は順調に下がる一方で val loss は下がりきらず横ばい〜微増するはず．train と val の乖離が広がっている＝モデルが訓練データに適応しすぎて汎化しなくなり始めていることを確認する．
 
 ### early stopping
 
