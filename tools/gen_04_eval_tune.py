@@ -60,7 +60,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
 history = []
-for epoch in range(1, 16):
+for epoch in range(1, 11):
     tr_loss, tr_acc = run_epoch(model, loaders['train'], criterion, dev, optimizer)
     va_loss, va_acc = run_epoch(model, loaders['val'], criterion, dev, None)
     print(f"epoch {epoch:2d}: train loss {tr_loss:.3f} acc {tr_acc:.3f} | val loss {va_loss:.3f} acc {va_acc:.3f}")
@@ -99,8 +99,8 @@ md("""これで「第3回の問題＝ログが残らない」は解決した．
 | train loss↓ / val loss↑ | **過学習**．モデルが訓練データに特化しすぎている |
 | train loss が高止まり | **未学習**．モデルの容量が足りないか，学習率が合っていない |
 
-弱ベースラインの15 epoch では，train loss は下がるが val loss は途中から横ばい〜微増するはず．
-「train は良くなっているのに val は良くならない＝過学習が始まっている」ことを確認しよう．
+10 epoch でも train loss は順調に下がる一方で val loss は下がりきらず横ばい〜微増するはず．
+train と val の乖離が広がっている＝モデルが訓練データに適応しすぎて汎化しなくなり始めていることを確認しよう．
 
 ### early stopping
 
