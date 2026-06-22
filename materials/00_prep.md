@@ -69,9 +69,15 @@ mkdir data && uv run python -c "import torchaudio; torchaudio.datasets.SPEECHCOM
 uv run python scripts/smoke.py
 ```
 
-`torch` / `torchaudio` の version が表示され，`SPEECHCOMMANDS: found` と出れば環境完成．
+以下のような出力になればOK（GPUの型番は違くてもOK）．
 
-GPU が無く `CUDA avail : False` でも PASS 扱い（GPU は研究室マシンで使う）．
+```
+torch       : 2.4.1+cu121
+torchaudio  : 2.4.1+cu121
+CUDA avail  : True
+device      : NVIDIA GeForce RTX 2080 Ti 
+SPEECHCOMMANDS: found  -> data/SpeechCommands/speech_commands_v0.02
+```
 
 ## 予習
 
