@@ -58,7 +58,7 @@ uv add "torch==2.4.1" "torchaudio==2.4.1" matplotlib librosa
 ### 5. データセットを取得
 
 ```bash
-uv run python -c "import torchaudio; torchaudio.datasets.SPEECHCOMMANDS(root='data', download=True)"
+mkdir data && uv run python -c "import torchaudio; torchaudio.datasets.SPEECHCOMMANDS(root='data', download=True)"
 ```
 
 約 2.3GB．空き容量 3GB 以上を確保しておく．
