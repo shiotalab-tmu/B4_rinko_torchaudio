@@ -52,7 +52,7 @@ Python は **3.12** を指定する（torch 2.4.1 は 3.13 に対応していな
 ### 4. 依存パッケージを足す
 
 ```bash
-uv add "torch==2.4.1" "torchaudio==2.4.1" matplotlib librosa
+uv add "torch==2.4.1" "torchaudio==2.4.1" matplotlib librosa ipykernel
 ```
 
 ### 5. データセットを取得
