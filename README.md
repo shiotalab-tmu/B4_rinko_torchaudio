@@ -41,3 +41,8 @@ data/         SPEECHCOMMANDS（各自 DL，git 管理外）
 - PyTorch "Learn the Basics": https://docs.pytorch.org/tutorials/beginner/basics/intro.html
 - torchaudio SPEECHCOMMANDS: https://docs.pytorch.org/audio/stable/generated/torchaudio.datasets.SPEECHCOMMANDS.html
 - uv: https://docs.astral.sh/uv/
+
+## 輪講資料
+輪講資料はWikiにあります！
+
+[Wikiのページ](https://github.com/shiotalab-tmu/B4_rinko_torchaudio/wiki)
