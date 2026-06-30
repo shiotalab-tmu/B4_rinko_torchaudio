@@ -1,4 +1,4 @@
-"""kws: SPEECHCOMMANDS を題材にした PyTorch KWS チュートリアルのパッケージ.
+"""kws: SPEECHCOMMANDS を題材にした PyTorch 音声コマンド分類チュートリアルのパッケージ.
 
 各回の notebook で穴埋めした処理を，このパッケージのモジュールに整理していく:
 - data.py     : データ処理（Dataset / ラベル変換 / collate_fn / log-mel）

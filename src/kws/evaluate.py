@@ -56,7 +56,7 @@ def plot_confusion(cm: np.ndarray, acc: float, path: Path) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="KWS 評価")
+    parser = argparse.ArgumentParser(description="評価")
     parser.add_argument("--ckpt", required=True, help="checkpoint (best.pt) のパス")
     parser.add_argument("--device", help="cuda / cpu（明示指定）")
     parser.add_argument("--data-root", dest="data_root", default="data")
