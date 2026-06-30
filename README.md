@@ -1,4 +1,4 @@
-# PyTorch 音声キーワードスポッティング チュートリアル
+# PyTorch 音声コマンド分類 チュートリアル
 
 torchaudio の SPEECHCOMMANDS（35クラス）を題材に，PyTorch で学習パイプラインを一通り組むハンズオン教材．
 事前課題 + 全4回．notebook の TODO を埋めながら進め，各回の最後に `src/kws/` へ整理する．

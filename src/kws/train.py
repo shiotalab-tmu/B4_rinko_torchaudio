@@ -101,7 +101,7 @@ def run_epoch(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="KWS 学習ループ")
+    parser = argparse.ArgumentParser(description="学習ループ")
     parser.add_argument("--config", help="YAML config のパス")
     parser.add_argument("--device", help="cuda / cpu")
     parser.add_argument("--epochs", type=int, help="config の epochs を上書き")
